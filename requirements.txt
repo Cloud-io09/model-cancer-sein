@@ -1,0 +1,8 @@
+# Sur Colab, tout est déjà installé. En local (GPU conseillé) :
+torch>=2.2
+torchvision>=0.17
+pandas>=2.2
+pyarrow>=15
+scikit-learn>=1.4
+matplotlib>=3.8
+pillow>=10

@@ -1,0 +1,30 @@
+Projet SPÉ 1 — Détection de métastases du cancer du sein dans des images histopathologiques
+MBA 2 Data & BI — Epitech — 2026-2027
+Kick-off : vendredi 30 octobre 2026 · Follow-up : vendredi 13 novembre · Soutenance : vendredi 27 novembre
+Rendu : jeudi 26 novembre 2026, 18h00 (aucun retard accepté)
+
+CONTENU
+- 01_Sujet_SPE1_histopathologie.pdf : le sujet, les livrables et la grille d'évaluation
+- 02_Regles_communes_SPE.pdf        : règles des projets de spécialisation (groupes, IA, rendus)
+- SPE1_notebook_demarrage.ipynb     : notebook de démarrage, testé de bout en bout
+- donnees/ids_sous_echantillon.csv  : liste des 39 000 patchs du sous-échantillon
+- donnees/metadata_complete.zip     : hôpital, lame, patiente, ganglion, coordonnées et label des 455 954 patchs (sans images)
+- donnees/stages.csv                : classe de chaque lame et stade pN des 100 patientes (CAMELYON17, licence CC0)
+- requirements.txt                  : bibliothèques, si vous travaillez hors de Colab
+
+DÉMARRER (Google Colab, 15 à 20 minutes)
+1. Ouvrir https://colab.research.google.com, puis Fichier > Importer un notebook > SPE1_notebook_demarrage.ipynb
+2. Exécution > Modifier le type d'exécution > GPU (T4)
+3. Panneau Fichiers (icône dossier à gauche) > Importer les 3 fichiers du dossier donnees/
+4. Exécution > Tout exécuter. La première fois, le notebook télécharge les données depuis Hugging Face
+   et construit le sous-échantillon (environ 10 Go téléchargés, 10 à 20 minutes).
+   Conseil : copiez ensuite camelyon17_sous_echantillon.parquet dans votre Google Drive
+   et passez SOURCE = "drive" pour les sessions suivantes.
+
+Pour un essai rapide avant le vrai entraînement : QUICK = True dans la cellule des paramètres.
+Kaggle Notebooks fonctionne aussi (environ 30 heures de GPU gratuites par semaine).
+
+RÈGLE D'OR : l'hôpital 2 (split "test") ne sert qu'une seule fois, à la fin. Les réglages se font sur val_ood.
+
+Sources : CAMELYON17 (https://camelyon17.grand-challenge.org, CC0) ; Camelyon17-WILDS (Koh et al., ICML 2021) ;
+miroir Hugging Face wltjr1007/Camelyon17-WILDS.
