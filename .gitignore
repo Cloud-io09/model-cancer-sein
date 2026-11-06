@@ -1,1 +1,5 @@
-.venv*.parquet
+.venv/
+*.parquet
+*.pt
+predictions_*.csv
+.DS_Store
