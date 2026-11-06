@@ -2,7 +2,7 @@
 
 Présentation de **10 minutes**, qui compte pour **20 % de la note finale**. Critère évalué : régularité et sérieux du travail, capacité à intégrer les retours, organisation du groupe.
 
-Les valeurs `[à remplir]` sortent du notebook exécuté sur Colab (GPU T4). La section du notebook qui les produit est indiquée à chaque fois.
+Les valeurs ci-dessous sortent du notebook exécuté en entier le 6 novembre sur un Mac M2 (GPU MPS, graine 42, une seule exécution). Une exécution sur Colab donnera des chiffres légèrement différents. La section du notebook qui les produit est indiquée à chaque fois, et les captures sont dans `figures/`.
 
 ---
 
@@ -65,7 +65,7 @@ Au total : 50 lames annotées, **toutes positives**, venant de 43 patientes. On 
 
 ## 4. Trois constats d'exploration (à illustrer)
 
-1. **La couleur trahit l'hôpital.** Les histogrammes RGB diffèrent nettement d'un hôpital à l'autre. Une régression logistique sur la seule couleur reconnaît l'hôpital de lames jamais vues avec `[à remplir]` % de bonnes réponses, contre 20 % au hasard (section 3).
+1. **La couleur trahit l'hôpital.** Les histogrammes RGB diffèrent nettement d'un hôpital à l'autre. Une régression logistique sur la seule couleur reconnaît l'hôpital de lames jamais vues avec **79,0 %** de bonnes réponses, contre 20 % au hasard (section 3).
    → Un modèle peut apprendre l'hôpital plutôt que les cellules. D'où les variantes de couleur et Grad-CAM.
 2. **Les lames sont très inégales.** Une lame peut compter de 888 à 61 110 patchs. À elle seule, la plus grosse lame (H4) a plus de patchs que tout l'hôpital H1 (34 904).
    → Il faut découper par lame ou par patiente, et regarder les résultats par hôpital, pas seulement en global.
@@ -83,29 +83,30 @@ Constat de réserve : la part de tumeur d'une lame va de 0,1 % à 93 %. Les lame
 
 | | ROC-AUC | Rappel (seuil 0,5) |
 |---|---|---|
-| `val_lames` | `[à remplir]` | `[à remplir]` |
-| `val_ood` (H1) | `[à remplir]` | `[à remplir]` |
+| `val_lames` | 0,836 | 0,678 |
+| `val_ood` (H1) | 0,761 | 0,716 |
 
 ### Premier CNN (sections 5 et 6)
 ResNet18 pré-entraîné sur ImageNet. Entraînement en deux temps : 2 époques avec seule la dernière couche, puis 2 époques d'ajustement fin du dernier bloc. Patchs gardés en 96 × 96.
 
 | Modèle | ROC-AUC `val_lames` H0 / H3 / H4 | ROC-AUC `val_ood` H1 |
 |---|---|---|
-| référence | `[à remplir]` | `[à remplir]` |
-| `base` (retournements seuls) | `[à remplir]` | `[à remplir]` |
-| `couleur` (+ variations de teinte et de contraste) | `[à remplir]` | `[à remplir]` |
-| `gris` (niveaux de gris) | `[à remplir]` | `[à remplir]` |
+| référence | 0,976 / 0,938 / 0,545 | 0,761 |
+| `base` (retournements seuls) | 0,988 / 0,983 / 0,969 | 0,955 |
+| `couleur` (+ variations de teinte et de contraste) | 0,988 / 0,982 / 0,980 | 0,961 |
+| `gris` (niveaux de gris) | 0,977 / 0,974 / 0,980 | 0,951 |
 
-- **Modèle retenu :** `[à remplir]`. Il est choisi sur la meilleure ROC-AUC sur `val_ood`, jamais sur le test.
-- **Seuil :** `[à remplir]`. C'est le plus haut seuil qui garde un rappel d'au moins 95 % sur `val_ood`.
+- **Modèle retenu :** `couleur`. Il est choisi sur la meilleure ROC-AUC sur `val_ood`, jamais sur le test. Attention : 0,010 d'écart entre les trois variantes, sur une seule graine. On ne peut pas encore dire qu'une variante est meilleure.
+- **Seuil :** 0,14. C'est le plus haut seuil qui garde un rappel d'au moins 95 % sur `val_ood`.
 - **Au seuil retenu, sur `val_ood` :**
-  - rappel : `[à remplir]` ;
-  - spécificité : `[à remplir]` ;
-  - matrice de confusion : `[capture]`.
-- **Écart entre `val_lames` et `val_ood` :** `[à remplir]`. C'est la mesure de l'effet du changement d'hôpital.
-- **Précision attendue si seulement 1 % des patchs sont tumoraux :** `[à remplir]`, soit `[à remplir]` faux positifs pour 1 vrai positif (section 6).
+  - rappel : 0,951 (atteint par construction, puisque le seuil est réglé sur ces mêmes données) ;
+  - spécificité : 0,771 ;
+  - matrice de confusion : `figures/confusion_roc.png`.
+- **Au même seuil, sur `val_lames` :** rappel de 0,984 (H0), 0,970 (H3) et 0,930 (H4). H4 passe sous la cible de 95 % : un seuil réglé sur un hôpital ne se transpose pas tel quel à un autre.
+- **Écart entre `val_lames` et `val_ood` :** 0,983 (moyenne simple de H0, H3 et H4) contre 0,961, soit 0,022 de ROC-AUC. C'est la mesure de l'effet du changement d'hôpital.
+- **Précision attendue si seulement 1 % des patchs sont tumoraux :** 4,0 %, soit 23,9 faux positifs pour 1 vrai positif (section 6).
 
-Message clé : le CNN doit **battre la référence sur `val_ood`**, pas seulement sur `val_lames`. Sinon il n'apporte rien hors des hôpitaux vus.
+Message clé : le CNN doit **battre la référence sur `val_ood`**, pas seulement sur `val_lames`. Sinon il n'apporte rien hors des hôpitaux vus. C'est le cas ici : 0,961 contre 0,761.
 
 ---
 
@@ -115,12 +116,12 @@ Message clé : le CNN doit **battre la référence sur `val_ood`**, pas seulemen
 2. **Étendue.** On marque comme tumorales les cases où la probabilité dépasse `SEUIL_LAME`, puis on regroupe les cases voisines en zones. Le diamètre de la plus grande zone donne la classe de la lame : ITC ≤ 0,2 mm, micro ≤ 2 mm, macro au-delà.
 3. **Plafond de la méthode (vérifié).** Appliquée aux étiquettes vraies des 50 lames, la méthode retrouve la classe officielle de **44 lames sur 50 (88 %)**. Les 6 écarts sont des ITC classées micro : la grille de 31 µm est grossière, et elle ne compte pas les cellules (critère « moins de 200 cellules »). Aucun modèle ne fera mieux que ce plafond.
 4. **Règles pN (vérifiées).** Codées dans le notebook, elles redonnent **100 %** des stades officiels des 100 patientes. Si l'on remplace les classes des 50 lames par celles du plafond, **5 patientes changent de stade, toutes vers un stade plus élevé** (sur-stadification, sans sous-stadification).
-5. **Avec le modèle.** On prédit tous les patchs des 10 lames de H1 (environ 1,5 Go), puis on produit la carte de chaleur, la classe de chaque lame et l'effet sur le pN. Résultats : `[à remplir]` lames bien classées sur 10, et `[à remplir]` stades pN changés, dont `[à remplir]` sous-stadifications.
+5. **Avec le modèle.** On prédit tous les patchs des 10 lames de H1 (environ 1,5 Go), puis on produit la carte de chaleur, la classe de chaque lame et l'effet sur le pN. Résultats : **9 lames bien classées sur 10**, et **1 stade pN changé sur 8 patientes, dont 0 sous-stadification**. L'unique erreur (lame 14, patiente 024, ITC classée micro, 0,22 mm) vient de la grille : les labels vrais donnent la même erreur. Ce score est **très optimiste, voir la première limite ci-dessous**.
 6. **Test final.** Le même traitement sera appliqué une seule fois aux 10 lames de H2, à la fin.
 
 **Limites à annoncer d'emblée :**
+- **le 9/10 est gonflé par la construction de WILDS (mesuré sur H1).** Les patchs normaux y sont clairsemés : chacun a en moyenne 0,07 à 0,13 voisin sur 8. Les faux positifs restent donc isolés et ne forment pas de grande zone. Au seuil de 0,14, 23 % des patchs normaux sont pourtant marqués tumoraux (11 % au seuil de 0,5), ce qui donne de 111 à 697 zones par lame, mais la plus grande zone reste presque toujours la vraie tumeur. D'où un score de lames identique (90 %) pour les seuils 0,14, 0,5, 0,7 et 0,9. Sur une lame entière, où la grille est complète, ces faux positifs se toucheraient et l'étendue serait surestimée. Ce résultat ne vaut donc pas performance clinique ;
 - les lames sont toutes positives et aucune patiente n'est complète, donc on mesure l'effet de nos erreurs sur le stade pN, pas un vrai stade prédit ;
-- WILDS n'a gardé qu'une partie des patchs normaux, donc les faux positifs sur une lame entière seraient plus nombreux ;
 - `SEUIL_LAME` est réglé sur H1, donc le résultat par lame y est optimiste.
 
 ---
@@ -137,7 +138,8 @@ Message clé : le CNN doit **battre la référence sur `val_ood`**, pas seulemen
 | Pourquoi ResNet18 en 96 × 96 ? | Modèle léger, rapide sur un GPU T4 gratuit, et taille native des patchs. Passer à 224 × 224 est prévu en comparaison (paramètre `TAILLE`). |
 | Le modèle regarde-t-il la couleur ? | On le vérifie de trois façons : Grad-CAM (section 7), les résultats par hôpital, et la variante `gris` qui retire la couleur. |
 | Comment passez-vous en millimètres ? | 32 px × 0,96 µm/px ≈ 31 µm par case. Source : WILDS, annexe E.2. La résolution exacte (0,23 à 0,25 µm/px avant réduction) est un paramètre. |
-| Les résultats sont-ils stables ? | Pas encore mesuré : plusieurs graines sont prévues d'ici le rendu. |
+| Les résultats sont-ils stables ? | Pas encore mesuré : plusieurs graines sont prévues d'ici le rendu. Le choix de la variante `couleur` reste donc provisoire. |
+| 9 lames sur 10, c'est un bon résultat ? | Non, pas tel quel. Il est identique du seuil 0,14 au seuil 0,9, car les patchs normaux de WILDS sont trop clairsemés pour que les faux positifs se regroupent. Il faudrait des lames entières pour mesurer la vraie performance. |
 | Cadre réglementaire ? | Un tel outil est un dispositif médical, et un système à haut risque au sens de l'AI Act. Il exige validation clinique, traçabilité et supervision humaine. Le pathologiste reste décisionnaire. |
 
 ---
@@ -175,8 +177,8 @@ Rappel : chaque membre doit pouvoir expliquer **tout** le projet, car la note de
 
 ## 10. Checklist avant le rendez-vous
 
-- [ ] Notebook exécuté en entier sur Colab, avec les sorties enregistrées (*Fichier → Enregistrer une copie dans GitHub*).
-- [ ] Toutes les valeurs `[à remplir]` complétées.
-- [ ] Captures prêtes : grille d'images, histogrammes RGB, tableau ROC-AUC par hôpital, matrice de confusion, Grad-CAM, une carte de chaleur de lame.
-- [ ] Test H2 **non lancé** (`LANCER_TEST = False`).
+- [x] Notebook exécuté en entier avec les sorties enregistrées (Mac M2, 6 novembre).
+- [x] Toutes les valeurs `[à remplir]` complétées.
+- [x] Captures prêtes dans `figures/` : grille d'images, histogrammes RGB, matrice de confusion, Grad-CAM, cartes de chaleur. Le tableau ROC-AUC est au §5.
+- [x] Test H2 **non lancé** (`LANCER_TEST = False`).
 - [ ] Usage de l'IA noté au fur et à mesure (outil, tâches, ce que le groupe a vérifié lui-même).
