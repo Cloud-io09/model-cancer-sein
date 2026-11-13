@@ -2,7 +2,7 @@
 
 Présentation de **10 minutes**, qui compte pour **20 % de la note finale**. Critère évalué : régularité et sérieux du travail, capacité à intégrer les retours, organisation du groupe.
 
-Les valeurs `[à remplir]` sortent du notebook exécuté sur Colab (GPU T4). La section du notebook qui les produit est indiquée à chaque fois.
+Les valeurs `[à remplir]` sortent du notebook exécuté sur Colab (GPU T4). La section du notebook qui les produit est indiquée à chaque fois. La section 9 du notebook les rassemble toutes dans `resultats_followup.md`, avec les figures dans `figures/`, et télécharge le tout dans `followup.zip`.
 
 ---
 
