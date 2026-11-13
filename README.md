@@ -16,7 +16,7 @@ ROC-AUC au niveau des patchs. H0, H3 et H4 : hôpitaux de l'entraînement, sur d
 | ResNet18 `gris` | 0,977 | 0,974 | 0,980 | 0,951 |
 
 - Seuil de 0,14, choisi sur H1 pour détecter au moins 95 % des tumeurs : rappel 0,951, spécificité 0,771.
-- Du patch à la patiente : nos règles pN redonnent 100 % des stades officiels. Sur H1, 9 lames sur 10 sont bien classées, mais ce score est optimiste (voir les limites dans `flw-up-notes.md`).
+- Du patch à la patiente : nos règles pN redonnent 100 % des stades officiels. Sur H1, 9 lames sur 10 sont bien classées, mais ce score est optimiste : dans WILDS, les patchs normaux sont clairsemés, donc les faux positifs restent isolés et ne forment pas de grande zone.
 - Test final sur l'hôpital 2 : pas encore lancé, il ne sera utilisé qu'une fois.
 
 ## Relancer le notebook sur Colab
@@ -42,7 +42,6 @@ Le notebook utilise le GPU s'il y en a un (CUDA, ou MPS sur Mac).
 | Fichier | Rôle |
 |---|---|
 | `SPE1_notebook_demarrage.ipynb` | tout le pipeline, avec les résultats affichés |
-| `flw-up-notes.md` | notes et résultats pour le follow-up du 13 novembre |
 | `figures/` | figures pour les slides |
 | `data/` | liste des patchs, métadonnées et stades officiels (pas d'images) |
 | `usage_ia.md` | annexe « Usage de l'IA » |
