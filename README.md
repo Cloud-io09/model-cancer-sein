@@ -32,7 +32,7 @@ Un GPU est fortement conseillé.
 | `data/ids_sous_echantillon.csv` | Les 39 000 patchs du sous-échantillon |
 | `data/metadata_complete.zip` | Hôpital, lame, patiente, coordonnées et label des 455 954 patchs (sans images) |
 | `data/stages.csv` | Classe de chaque lame et stade pN des 100 patientes (CAMELYON17, CC0) |
-| `docs/` | Sujet, règles communes, notes de follow-up, résumé exécutif |
+| `docs/` | Sujet et règles du projet |
 
 Les images ne sont pas versionnées, car elles sont trop volumineuses. Le notebook les télécharge.
 
@@ -51,7 +51,7 @@ Les images ne sont pas versionnées, car elles sont trop volumineuses. Le notebo
 
 ## Sorties
 
-La section 9 écrit `resultats_followup.md`, qui contient tous les chiffres clés, ainsi que les figures dans `figures/`. Sur Colab, elle télécharge aussi l'archive `followup.zip`.
+La section 9 écrit `resultats.md`, qui contient les chiffres clés, et les figures dans `figures/`. Sur Colab, elle télécharge aussi l'archive `resultats.zip`.
 
 ## Sources
 

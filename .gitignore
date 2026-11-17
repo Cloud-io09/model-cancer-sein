@@ -1,10 +1,11 @@
 .venv/
 .DS_Store
+notes/
 
 # Données et sorties générées par le notebook
 *.parquet
 *.pt
 predictions_*.csv
 figures/
-resultats_followup.md
-followup.zip
+resultats.md
+resultats.zip
