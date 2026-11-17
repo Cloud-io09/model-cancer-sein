@@ -60,16 +60,28 @@ Construire un **système d'aide au diagnostic**, pas seulement un modèle :
 - **Plafond de la méthode lame.** Avec les labels vrais, notre mesure d'étendue retrouve la classe officielle de **44 lames sur 50 (88 %)**. Les 6 écarts sont des ITC classées micro.
 - **Stade pN.** Nos règles redonnent **100 %** des stades officiels des 100 patientes. Avec les classes du plafond, 5 patientes changent de stade, toutes vers un stade plus élevé (aucune sous-stadification).
 
-### À produire par l'exécution sur Colab
+### Mesurés sur Colab (13/11, GPU, graine 42, 2 + 2 époques)
 
-Le pipeline complet a été exécuté de bout en bout sur des données factices pour vérifier le code. **Les scores réels ne sont pas encore produits.** Il faut lancer le notebook sur Colab avec un GPU T4, dont la section 9 génère `resultats_followup.md`. Restent à obtenir :
+- **Constat 3 : la couleur trahit l'hôpital.** Un histogramme de couleur reconnaît l'hôpital de lames jamais vues dans **81 %** des cas (le hasard donne 20 %).
+- **Référence.** ROC-AUC de 0,836 sur `val_lames` et de 0,761 sur H1. Elle **s'effondre sur H4 (0,545, quasiment le hasard)** alors qu'elle dépasse 0,93 sur H0 et H3. La couleur seule ne se transfère pas, même d'une patiente à l'autre.
+- **CNN.** ROC-AUC par hôpital :
 
-- le constat 3 : la part de patchs dont l'hôpital est reconnu par la seule couleur ;
-- la ROC-AUC de la référence et des 3 variantes du CNN, par hôpital ;
-- le modèle retenu, le seuil, le rappel et la spécificité ;
-- la précision attendue en conditions réelles ;
-- Grad-CAM ;
-- la classe des lames de l'hôpital 1 et l'effet sur le pN.
+  | Variante | H0 | H3 | H4 | H1 (jamais vu) |
+  |---|---|---|---|---|
+  | `base` | 0,987 | 0,983 | 0,969 | **0,963** |
+  | `couleur` | 0,986 | 0,984 | 0,980 | 0,962 |
+  | `gris` | 0,977 | 0,974 | 0,977 | 0,948 |
+  | référence | 0,976 | 0,938 | 0,545 | 0,761 |
+
+  - Le CNN bat nettement la référence, surtout sur H1 et H4.
+  - Le changement d'hôpital coûte peu au CNN (**−0,015** de ROC-AUC), beaucoup plus à la référence (−0,075).
+  - `base` et `couleur` sont **à égalité** (0,001 d'écart, une seule graine) ; `couleur` est meilleure sur H4.
+  - En niveaux de gris, la ROC-AUC reste à 0,948 : le CNN s'appuie surtout sur la structure du tissu, et la couleur n'ajoute qu'un peu.
+- **Seuil.** Pour un rappel de 95 % sur H1, il faut descendre le seuil à **0,30** : le décalage entre hôpitaux se voit dans la confiance du modèle plutôt que dans le classement des patchs. À ce seuil, la spécificité est de **0,818**, avec 98 tumeurs manquées et 364 fausses alertes sur 4 000 patchs.
+- **Conditions réelles.** Si 1 % des patchs étaient tumoraux, la précision ne serait que de **5 %**, soit environ 19 fausses alertes par vraie détection. L'outil sert à trier les lames ; le pathologiste confirme.
+- **Lames de H1.** **9 lames sur 10** sont bien classées, ce qui atteint le plafond de la méthode sur H1 (9/10). L'erreur est une lame ITC classée micro, dont la zone mesure 0,22 mm pour une limite à 0,2 mm.
+- **Stade pN sur H1.** Un seul stade change : une sur-stadification, **aucune sous-stadification**.
+- **Grad-CAM.** Les figures sont produites ; leur analyse reste à rédiger.
 
 ## Limites à assumer
 
@@ -80,8 +92,8 @@ Le pipeline complet a été exécuté de bout en bout sur des données factices 
 
 ## Prochaines étapes (d'ici le 26 novembre)
 
-1. Exécuter le notebook sur Colab et compléter les notes de follow-up.
-2. Tester plusieurs graines, puis une normalisation de la coloration (Macenko) et/ou une entrée en 224 × 224.
+1. Répéter l'entraînement avec plusieurs graines pour départager `base` et `couleur`, et suivre les courbes de perte (sur-apprentissage).
+2. Démontrer la fuite de `id_val` en chiffres, puis tester une normalisation de la coloration (Macenko) et/ou une entrée en 224 × 224.
 3. Affiner l'estimation de l'étendue (lissage, taille minimale de zone) et analyser les faux négatifs avec Grad-CAM.
 4. Lancer le test final sur l'hôpital 2, une seule fois.
 5. Rédiger le rapport, les supports de soutenance et l'annexe « Usage de l'IA ».

@@ -42,6 +42,8 @@ Les images ne sont pas versionnées, car elles sont trop volumineuses. Le notebo
 |---|---|
 | `QUICK` | Essai rapide sur quelques centaines de patchs |
 | `VARIANTES` | Traitements de la couleur comparés : `base`, `couleur`, `gris` |
+| `GRAINES` | Graines d'entraînement : chaque variante est entraînée avec chacune, et l'on compare les moyennes |
+| `DEMO_FUITE` | Mesurer la fuite du découpage officiel `id_val` (un entraînement de plus) |
 | `CIBLE_RAPPEL` | Rappel minimal visé sur la validation pour fixer le seuil (0,95 par défaut) |
 | `SEUIL_LAME` | Seuil des patchs pour délimiter les zones tumorales d'une lame |
 | `LAMES_H1` | Prédire tous les patchs des lames de l'hôpital 1 (environ 1,5 Go) |
