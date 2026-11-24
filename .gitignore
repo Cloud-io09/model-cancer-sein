@@ -2,10 +2,11 @@
 .DS_Store
 notes/
 
-# Données et sorties générées par le notebook
+# Données et sorties lourdes générées par le notebook
 *.parquet
 *.pt
 predictions_*.csv
-figures/
-resultats.md
 resultats.zip
+tmp_*.parquet
+
+# resultats.md et figures/ sont versionnés : le jury doit lire les chiffres sans relancer
