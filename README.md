@@ -2,7 +2,7 @@
 
 Projet SPÉ 1 — MBA 2 Data & BI, Epitech, 2026-2027.
 
-Ce projet classe des patchs d'images de ganglions lymphatiques (normal ou tumoral) avec un CNN, puis remonte du patch à la lame (ITC, micro- ou macro-métastase) et au stade pN de la patiente. Il s'appuie sur Camelyon17-WILDS, qui réunit 5 hôpitaux. Le modèle s'entraîne sur 3 d'entre eux et il est évalué sur 2 hôpitaux jamais vus.
+Ce projet classe des patchs d'images de ganglions lymphatiques (normal ou tumoral) avec un CNN, puis remonte du patch à la lame (ITC, micro- ou macro-métastase) et au stade pN de la patiente. Il s'appuie sur Camelyon17-WILDS, qui réunit 5 hôpitaux. Le modèle s'entraîne sur 3 d'entre eux (H0, H3, H4). L'hôpital 1, jamais vu à l'entraînement, sert à tous les réglages (variante, seuils). L'hôpital 2 sert une seule fois, à la fin : c'est la seule mesure vraiment hors distribution.
 
 ## Relancer le projet
 
@@ -41,7 +41,7 @@ Les images ne sont pas versionnées, car elles sont trop volumineuses. Le notebo
 | Paramètre | Rôle |
 |---|---|
 | `QUICK` | Essai rapide sur quelques centaines de patchs |
-| `VARIANTES` | Traitements de la couleur comparés : `base`, `couleur`, `gris` |
+| `VARIANTES` | Traitements de la couleur comparés : `base`, `couleur`, `gris`, `macenko` (normalisation de la coloration) |
 | `GRAINES` | Graines d'entraînement : chaque variante est entraînée avec chacune, et l'on compare les moyennes |
 | `DEMO_FUITE` | Mesurer la fuite du découpage officiel `id_val` (un entraînement de plus) |
 | `CIBLE_RAPPEL` | Rappel minimal visé sur la validation pour fixer le seuil (0,95 par défaut) |
@@ -51,7 +51,7 @@ Les images ne sont pas versionnées, car elles sont trop volumineuses. Le notebo
 
 ## Sorties
 
-La section 9 écrit `resultats.md`, qui contient les chiffres clés, et les figures dans `figures/`. Sur Colab, elle télécharge aussi l'archive `resultats.zip`.
+La section 9 écrit `resultats.md`, qui contient les chiffres clés, et les figures dans `figures/` ; la section 10 y ajoute le test sur l'hôpital 2. Les deux sont versionnés avec le notebook exécuté, pour lire les résultats sans rien relancer.
 
 ## Sources
 
